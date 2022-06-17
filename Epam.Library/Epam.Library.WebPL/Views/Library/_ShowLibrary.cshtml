@@ -1,0 +1,215 @@
+@using System.Security.Claims
+@model PolygraphyPageViewModel
+
+@addTagHelper *, Epam.Library.WebPL
+
+<table class="table table-light table-bordered border-light">
+    <tr class="table-light">
+        <th scope="col" class="table-light w-50 text-lg-center">Name</th>
+        <th scope="col" class="table-light w-25 text-lg-center">Identifier</th>
+        <th scope="col" class="table-light w-25 text-lg-center">Total pages</th>
+    </tr>
+    @if (Model.Polygraphies.Any())
+    {
+        @foreach (var poly in Model.Polygraphies)
+        {
+            @if (poly is BookReadViewModel book)
+            {
+                <tr class="table-light">
+                    <td class="table-light w-50">
+                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#book-modal">
+                            @foreach (var author in book.Authors)
+                            {
+                                <span>@author.Firstname @author.Lastname</span>
+                            }
+                            - @book.Name (@book.Created!.Value.Year)
+                        </a>
+                        <div class="modal fade" id="book-modal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="bookModalLabel">@book.Name</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <ul>
+                                            <li>
+                                                Authors:
+                                                <ul>
+                                                    @foreach (var author in book.Authors)
+                                                    {
+                                                        <li>@author.Firstname @author.Lastname</li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                            <li>Creation date: @book.Created</li>
+                                            <li>City: @book.City</li>
+                                            <li>Publisher: @book.Publisher</li>
+                                            <li>Total pages: @book.TotalPages</li>
+                                            <li>Footnote: @book.Footnote</li>
+                                            <li>ISBN: @book.ISBN</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="table-light w-25">
+                        @book.ISBN
+                    </td>
+                    <td class="table-light d-flex w-auto">
+                        <div class="p-2 flex-grow-1">
+                            @book.TotalPages
+                        </div>
+                        @if (User.HasClaim(ClaimTypes.Role, "Librarian"))
+                        {
+                            <div class="p-2">
+                                <a class="text-dark" asp-action="UpdateBookInLibrary" asp-controller="Library" asp-route-id="@book.Id">Edit</a>
+                                <a class="text-dark" asp-action="MarkPolygraphyAsDeleted" asp-controller="Library" asp-route-id="@book.Id">Delete</a>
+                                @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+                                {
+                                    <a class="text-danger" asp-action="RemoveFromLibrary" asp-controller="Library" asp-route-id="@book.Id">Delete</a>
+                                }
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (poly is NewspaperIssueReadViewModel newspaperIssue)
+            {
+                <tr class="table-light">
+                    <td class="table-light w-50">
+                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#newspaperIssue-modal">
+                            @newspaperIssue.Name №@newspaperIssue.Number/@newspaperIssue.Created!.Value.Date
+                        </a>
+
+                        <div class="modal fade" id="newspaperIssue-modal" tabindex="-1" aria-labelledby="newspaperIssueModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="newspaperIssueModalLabel">@newspaperIssue.Name</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <ul>
+                                            <li>Number: @newspaperIssue.Number</li>
+                                            <li>Creation date: @newspaperIssue.Created</li>
+                                            <li>City: @newspaperIssue.City</li>
+                                            <li>Publisher: @newspaperIssue.Publisher</li>
+                                            <li>Total pages: @newspaperIssue.TotalPages</li>
+                                            <li>Footnote: @newspaperIssue.Footnote</li>
+                                            <li>ISSN: @newspaperIssue.ISSN</li>
+                                            <li>
+                                                <a asp-action="GetAllNewspaperIssuesById" asp-controller="Library"
+                                                   asp-route-id="@newspaperIssue.NewspaperId">
+                                                    Show all issues
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="table-light w-25">
+                        @newspaperIssue.ISSN
+                    </td>
+                    <td class="table-light d-flex w-auto">
+                        <div class="p-2 flex-grow-1">
+                            @newspaperIssue.TotalPages
+                        </div>
+                        @if (User.HasClaim(ClaimTypes.Role, "Librarian"))
+                        {
+                            <div class="p-2">
+                                <a class="text-dark" asp-action="UpdateNewspaperIssueInLibrary" asp-controller="Library" asp-route-id="@newspaperIssue.Id">Edit</a>
+                                <a class="text-dark" asp-action="MarkPolygraphyAsDeleted" asp-controller="Library" asp-route-id="@newspaperIssue.Id">Delete</a>
+                                @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+                                {
+                                    <a class="text-danger" asp-action="RemoveFromLibrary" asp-controller="Library" asp-route-id="@newspaperIssue.Id">Delete</a>
+                                }
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (poly is PatentReadViewModel patent)
+            {
+                <tr class="table-light">
+                    <td class="table-light w-50">
+                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#patent-modal">
+                            «@patent.Name»
+                            @if (patent.Created != null)
+                            {
+                                <span>
+                                    dated @patent.Created.Value.Date
+                                </span>
+                            }
+                        </a>
+
+                        <div class="modal fade" id="patent-modal" tabindex="-1" aria-labelledby="patentModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="patentModalLabel">@patent.Name</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <ul>
+                                            <li>
+                                                Authors:
+                                                <ul>
+                                                    @foreach (var author in patent.Authors)
+                                                    {
+                                                        <li>@author.Firstname @author.Lastname</li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                            <li>Creation date: @patent.Created</li>
+                                            <li>Country: @patent.Country</li>
+                                            <li>Number: @patent.Number</li>
+                                            <li>Total pages: @patent.TotalPages</li>
+                                            <li>Footnote: @patent.Footnote</li>
+                                            <li>Publication date: @patent.Published</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                    <td class="table-light w-25">
+                        @patent.Number
+                    </td>
+                    <td class="table-light d-flex w-auto">
+                        <div class="p-2 flex-grow-1">
+                            @patent.TotalPages
+                        </div>
+                        @if (User.HasClaim(ClaimTypes.Role, "Librarian"))
+                        {
+                            <div class="p-2">
+                                <a class="text-dark" asp-action="UpdatePatentInLibrary" asp-controller="Library" asp-route-id="@patent.Id">Edit</a>
+                                <a class="text-dark" asp-action="MarkPolygraphyAsDeleted" asp-controller="Library" asp-route-id="@patent.Id">Delete</a>
+                                @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+                                {
+                                    <a class="text-danger" asp-action="RemoveFromLibrary" asp-controller="Library" asp-route-id="@patent.Id">Delete</a>
+                                }
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    }
+</table>
+<div class="position-relative bottom-0 w-100">
+    <page-link page-model="Model.PageViewModel" page-action="GetAllLibrary" class="d-flex justify-content-center"></page-link>
+</div>

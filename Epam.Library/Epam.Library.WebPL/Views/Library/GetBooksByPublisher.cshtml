@@ -1,0 +1,33 @@
+@model PolygraphyPageViewModel
+
+@{
+    ViewBag.Title = "Books by publisher";
+    Layout = "_Layout";
+}
+
+<table class="table table-light table-bordered border-light">
+    <tr class="table-light">
+        <th scope="col" class="table-light w-25 text-lg-center">Publisher</th>
+        <th scope="col" class="table-light w-75 text-lg-center">Books</th>
+    </tr>
+    <tr class="table-light">
+        @foreach (var (key, value) in Model.BooksByPublisher)
+        {
+            <td class="table-light text-lg-center">
+                <p class="text-dark m-1">
+                    @key
+                </p>
+            </td>
+            <td class="table-light d-flex flex-md-wrap">
+                @foreach (var item in value)
+                {
+                    <p class="text-dark m-1">@item.Authors - @item.Name (@item.Created)</p>
+                }
+            </td>
+        }
+    </tr>
+</table>
+
+<div class="position-relative bottom-0 w-100">
+    <page-link page-model="Model.PageViewModel" page-action="GroupByYear" class="d-flex justify-content-center"></page-link>
+</div>

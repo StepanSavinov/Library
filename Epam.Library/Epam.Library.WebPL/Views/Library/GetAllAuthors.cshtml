@@ -1,0 +1,47 @@
+@model AuthorsPageViewModel
+@using System.Security.Claims
+
+@addTagHelper *, Epam.Library.WebPL
+
+@{
+    ViewBag.Title = "Authors";
+    Layout = "_Layout";
+}
+
+<table class="table table-light table-hover table-bordered border-dark">
+    <tr>
+        <th class="table-light">Firstname</th>
+        <th class="table-light">Lastname</th>
+    </tr>
+    
+    @foreach (var author in Model.Authors)
+    {
+        <tr class="table-light">
+            <td class="table-light w-25">
+                @author.Firstname
+            </td>
+            <td class="table-light d-flex w-auto">
+                <div class="p-2 flex-grow-1">
+                    @author.Lastname
+                </div>
+                @if (User.HasClaim(ClaimTypes.Role, "Librarian"))
+                {
+                    //<a asp-controller="Library" asp-action="UpdateAuthor">Edit</a>
+                    @Html.ActionLink("Edit", "UpdateAuthor", "Library", new {author.Id})
+                    <a asp-controller="Library" asp-action="MarkAuthorAsDeleted" asp-route-id="@author.Id">Delete</a>
+                }
+                @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+                {
+                    //@Html.ActionLink("Edit", "UpdateAuthor", "Library", new {author.Id})
+                    <div class="p-2">
+                        <a asp-controller="Library" asp-action="UpdateAuthor" asp-route-id="@author.Id">Edit</a>
+                        <a asp-controller="Library" asp-action="DeleteAuthor" asp-route-id="@author.Id">Delete</a>
+                    </div>
+                }
+            </td>
+        </tr>
+    }
+</table>
+<div class="position-relative bottom-0 w-100">
+    <page-link page-model="Model.PageViewModel" page-action="GetAllAuthors" class="d-flex justify-content-center"></page-link>
+</div>

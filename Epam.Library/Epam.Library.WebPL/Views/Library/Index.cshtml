@@ -1,0 +1,106 @@
+@using System.Security.Claims
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Main page";
+}
+
+<div class="d-flex flex-column align-items-center">
+    <div class="dropdown m-3">
+        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            Browse catalog
+        </a>
+
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <li>
+                <a class="dropdown-item text-dark" asp-controller="Library" asp-action="GetAllLibrary">Show catalog</a>
+            </li>
+            <li>
+                <a class="dropdown-item text-dark" asp-controller="Library" asp-action="GetAllAuthors">Show authors</a>
+            </li>
+            <li>
+                <a class="dropdown-item text-dark" asp-controller="Library" asp-action="GroupByYear">Show catalog by Year</a>
+            </li>
+            <li>
+                <a class="dropdown-item text-dark" asp-controller="Library" asp-action="GetSortedPolygraphies" asp-route-reversed="false">Ascending by year</a>
+            </li>
+            <li>
+                <a class="dropdown-item text-dark" asp-controller="Library" asp-action="GetSortedPolygraphies" asp-route-reversed="true">Descending by year</a>
+            </li>
+        </ul>
+    </div>
+
+    @if (User.HasClaim(ClaimTypes.Role, "User") ||
+         User.HasClaim(ClaimTypes.Role, "Librarian") ||
+         User.HasClaim(ClaimTypes.Role, "Admin"))
+    {
+        <div class="dropdown m-3">
+            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                Search
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="SearchByAuthor">By author</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="SearchByName">By name</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="SearchBooksByPublisher">By publisher</a>
+                </li>
+            </ul>
+        </div>
+    }
+
+    @if (User.HasClaim(ClaimTypes.Role, "Librarian") ||
+         User.HasClaim(ClaimTypes.Role, "Admin"))
+    {
+        <div class="dropdown m-3">
+            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                Librarian menu
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="AddAuthorToLibrary">Add author</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="AddBookToLibrary">Add book to library</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="AddNewspaperIssueToLibrary">Add newspaper issue to library</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="AddNewspaperToLibrary">Add newspaper library</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="Library" asp-action="AddPatentToLibrary">Add patent to library</a>
+                </li>
+            </ul>
+        </div>
+    }
+
+    @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+    {
+        <div class="dropdown m-3">
+            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                Admin menu
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="User" asp-action="AddUser">Add user</a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-dark" asp-controller="User" asp-action="GetAllUsers">Show all users</a>
+                </li>
+            </ul>
+        </div>
+    }
+</div>
+
+@section Scripts{
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+}

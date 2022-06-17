@@ -1,0 +1,38 @@
+@using System.Security.Claims
+@model UsersPageViewModel
+
+@addTagHelper *, Epam.Library.WebPL
+
+@{
+    ViewBag.Title = "Users";
+    Layout = "_Layout";
+}
+
+<table class="table table-light table-hover table-bordered border-dark">
+    <tr>
+        <th class="table-light">Username</th>
+        <th class="table-light">Role</th>
+    </tr>
+    
+    @foreach (var user in Model.Users)
+    {
+        <tr class="table-light">
+            <td class="table-light w-25">
+                @user.Username
+            </td>
+            <td class="table-light d-flex w-auto">
+                <div class="p-2 flex-grow-1">
+                    @user.Role
+                </div>
+                @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+                {
+                    <div class="p-2">
+                        @Html.ActionLink("Edit", "UpdateUser", "User", new {user.Id})
+                        @Html.ActionLink("Delete", "DeleteUser", "User", new {user.Id})
+                    </div>
+                }
+            </td>
+        </tr>
+    }
+</table>
+<page-link page-model="Model.PageViewModel" page-action="GetAllUsers"></page-link>

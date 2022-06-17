@@ -1,0 +1,73 @@
+@using System.Security.Claims
+@model PolygraphyPageViewModel
+
+@{
+    ViewBag.Title = "Issues";
+    Layout = "_Layout";
+}
+
+<table class="table table-light table-hover table-bordered border-dark">
+    <tr>
+        <th class="table-light">Firstname</th>
+        <th class="table-light">Lastname</th>
+    </tr>
+    
+    @foreach (var newspaperIssue in Model.Issues)
+    {
+        <tr class="table-light">
+                    <td class="table-light w-50">
+                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#newspaperIssue-modal">
+                            @newspaperIssue.Name №@newspaperIssue.Number/@newspaperIssue.Created!.Value.Date
+                        </a>
+
+                        <div class="modal fade" id="newspaperIssue-modal" tabindex="-1" aria-labelledby="newspaperIssueModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="newspaperIssueModalLabel">@newspaperIssue.Name</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <ul>
+                                            <li>Number: @newspaperIssue.Number</li>
+                                            <li>Creation date: @newspaperIssue.Created</li>
+                                            <li>City: @newspaperIssue.City</li>
+                                            <li>Publisher: @newspaperIssue.Publisher</li>
+                                            <li>Total pages: @newspaperIssue.TotalPages</li>
+                                            <li>Footnote: @newspaperIssue.Footnote</li>
+                                            <li>ISSN: @newspaperIssue.ISSN</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="table-light w-25">
+                        @newspaperIssue.ISSN
+                    </td>
+                    <td class="table-light d-flex w-auto">
+                        <div class="p-2 flex-grow-1">
+                            @newspaperIssue.TotalPages
+                        </div>
+                        @if (User.HasClaim(ClaimTypes.Role, "Librarian"))
+                        {
+                            <div class="p-2">
+                                <a class="text-dark" asp-action="UpdateNewspaperIssueInLibrary" asp-controller="Library" asp-route-id="@newspaperIssue.Id">Edit</a>
+                                <a class="text-dark" asp-action="MarkPolygraphyAsDeleted" asp-controller="Library" asp-route-id="@newspaperIssue.Id">Delete</a>
+                                @if (User.HasClaim(ClaimTypes.Role, "Admin"))
+                                {
+                                    <a class="text-danger" asp-action="RemoveFromLibrary" asp-controller="Library" asp-route-id="@newspaperIssue.Id">Delete</a>
+                                }
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+    }
+</table>
+<div class="position-relative bottom-0 w-100">
+    <page-link page-model="Model.PageViewModel" page-action="GetAllAuthors" class="d-flex justify-content-center"></page-link>
+</div>

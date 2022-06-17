@@ -1,0 +1,54 @@
+@model NewspaperIssueViewModel
+@{
+    ViewBag.Title = "Add newspaper issue";
+    Layout = "_Layout";
+}
+
+@using (Html.BeginForm("AddNewspaperIssueToLibrary", "Library", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, string.Empty, new { @class = "text-danger" })
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Name, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.Name)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Created, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.Created, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.Created)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.TotalPages, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.TotalPages, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.TotalPages)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Footnote, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.Footnote, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.Footnote)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.City, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.City, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.City)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Publisher, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.Publisher, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.Publisher)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.Number, new {htmlAttributes = new {@class="form-label"}})
+        @Html.EditorFor(model => model.Number, new {htmlAttributes = new {@class="form-control"}})
+        @Html.ValidationMessageFor(model => model.Number)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(model => model.NewspaperId, new {htmlAttributes = new {@class="form-label"}})
+        @* @Html.DropDownListFor(model => model.NewspaperId, new SelectList(ViewBag.Newspapers, "Id", "Name")) *@
+        <select class="form-select" aria-label="Newspaper select" asp-for="NewspaperId" asp-items="new @SelectList(ViewBag.Newspapers, "Id", "Name")"></select>
+        @Html.ValidationMessageFor(model => model.NewspaperId)
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Add</button>
+}

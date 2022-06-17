@@ -1,0 +1,35 @@
+@model PolygraphyPageViewModel
+
+@addTagHelper *, Epam.Library.WebPL
+
+@{
+    ViewBag.Title = "Group by year";
+    Layout = "_Layout";
+}
+
+<table class="table table-light table-bordered border-light">
+    <tr class="table-light">
+        <th scope="col" class="table-light w-25 text-lg-center">Year</th>
+        <th scope="col" class="table-light w-75 text-lg-center">Polygraphies</th>
+    </tr>
+    <tr class="table-light">
+        @foreach (var (key, value) in Model.GroupedByYear)
+        {
+            <td class="table-light text-lg-center">
+                <p class="text-dark m-1">
+                    @key
+                </p>
+            </td>
+            <td class="table-light d-flex flex-md-wrap">
+                @foreach (var item in value)
+                {
+                    <p class="text-dark m-1">@item.Name</p>
+                }
+            </td>
+        }
+    </tr>
+</table>
+
+<div class="position-relative bottom-0 w-100">
+    <page-link page-model="Model.PageViewModel" page-action="GroupByYear" class="d-flex justify-content-center"></page-link>
+</div>
