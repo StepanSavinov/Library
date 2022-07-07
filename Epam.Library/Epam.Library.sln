@@ -28,6 +28,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epam.Library.WebPL", "Epam.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epam.Library.DependencyConfig", "Epam.Library.DependencyConfig\Epam.Library.DependencyConfig.csproj", "{C82820D0-1C12-44DE-B1FA-A76F173D4F01}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{788A54EF-D6D9-4C94-80C3-83F5F818DCE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epam.Library.WebAPI", "Epam.Library.WebAPI\Epam.Library.WebAPI.csproj", "{9F359780-FEF9-41EE-A2D0-E3A4A0782B5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +47,7 @@ Global
 		{E18C9870-6B7C-4CB8-8972-AA4AC14B8896} = {AB46B277-5AD7-49AB-891F-F0F0E6C7371E}
 		{DDFD5BE4-6987-4960-A8A8-D99BEC03BE33} = {34D136A0-F01D-446B-B6C6-EA1335A3D74E}
 		{C82820D0-1C12-44DE-B1FA-A76F173D4F01} = {7F220EDD-847F-43BB-B134-30CCDFD571CD}
+		{9F359780-FEF9-41EE-A2D0-E3A4A0782B5C} = {788A54EF-D6D9-4C94-80C3-83F5F818DCE1}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{06AF1C94-0B92-4CBA-A9E8-FCE7310D478E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -81,5 +86,9 @@ Global
 		{C82820D0-1C12-44DE-B1FA-A76F173D4F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C82820D0-1C12-44DE-B1FA-A76F173D4F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C82820D0-1C12-44DE-B1FA-A76F173D4F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F359780-FEF9-41EE-A2D0-E3A4A0782B5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F359780-FEF9-41EE-A2D0-E3A4A0782B5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F359780-FEF9-41EE-A2D0-E3A4A0782B5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F359780-FEF9-41EE-A2D0-E3A4A0782B5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
