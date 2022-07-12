@@ -20,11 +20,6 @@ public class UserDao : IUserDao
         {
             return false;
         }
-
-        var test1 = GetUserByUsername(user.Username).Password;
-        var test2 = user.Password;
-        var test3 = user.Username;
-        var test4 = GetUserByUsername(user.Username).Username;
         return GetUserByUsername(user.Username).Password == user.Password;
     }
 

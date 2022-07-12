@@ -56,17 +56,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseDefaultFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapDefaultControllerRoute();
-
-app.UseRouting();
-
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
