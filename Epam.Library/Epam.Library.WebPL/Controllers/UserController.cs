@@ -33,7 +33,7 @@ public class UserController : Controller
         ViewBag.ReturnUrl = returnUrl;
         return View();
     }
-    
+
     [ServiceFilter(typeof(ExceptionFilter))]
     [ServiceFilter(typeof(AuthFilter))]
     [HttpPost]
@@ -41,38 +41,34 @@ public class UserController : Controller
     public IActionResult Login(LoginViewModel model, string? returnUrl = null)
     {
         if (!ModelState.IsValid) return View(model);
-        var user = new User(model.Username.ToLower(), GetHashedPassword(model.Password), _userLogic.GetUserByUsername(model.Username).Role);
+        var user = new User(model.Username.ToLower(), GetHashedPassword(model.Password),
+            _userLogic.GetUserByUsername(model.Username).Role);
 
         if (_userLogic.Auth(user, out var errors))
         {
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.Role, user.Role)
-            };
+            var claims = new List<Claim> {new(ClaimTypes.Name, user.Username), new(ClaimTypes.Role, user.Role)};
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
             {
-                AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
-                IsPersistent = true
+                AllowRefresh = true, ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20), IsPersistent = true
             };
-                
+
             HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity), authProperties);
-                
+
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            
+
             return RedirectToAction("Index", "Library");
         }
+
         ModelState.AddModelError(string.Empty, "Incorrect username or password");
         return View(model);
     }
-    
+
     [ServiceFilter(typeof(ExceptionFilter))]
     [ServiceFilter(typeof(ActionFilter))]
     [HttpGet]
