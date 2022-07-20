@@ -2,13 +2,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
+using AutoMapper;
 using Epam.Library.BLL.Interfaces;
 using Epam.Library.DependencyConfig;
 using Epam.Library.Entities;
+using Epam.Library.WebAPI.Helpers;
 using Epam.Library.WebAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -89,7 +91,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+
 Config.RegisterServices(builder.Services);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // builder.Services.AddCors(options =>
 // {
@@ -115,9 +119,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-app.MapGet("/", () => "Hello, world").ExcludeFromDescription();
-
 app.MapPost("/login",
         Login)
     .Accepts<UserLogin>("application/json")
@@ -128,16 +129,25 @@ app.MapPost("/register",
     .Accepts<UserLogin>("application/json")
     .Produces<User>();
 
-app.MapPost("/updateUser",
+app.MapPost("/update-user",
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         (int id, UserLogin user, IUserLogic service) => UpdateUser(id, user, service))
     .Produces<User>();
+
+app.MapPost("/delete-user",
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        (int id, IUserLogic service) => DeleteUser(id, service))
+    .Produces<bool>();
             
 
-app.MapGet("/get",
+app.MapGet("/get-all-users",
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         (IUserLogic service) => GetAllUsers(service))
     .Produces<List<User>>();
+
+app.MapGet("/get-all-library",
+        GetAllLibrary)
+    .Produces<List<Polygraphy>>();
 
 // methods
 
@@ -184,6 +194,16 @@ IResult Login(UserLogin user, IUserLogic service)
     return Results.BadRequest("Invalid user credentials");
 }
 
+IResult DeleteUser(int id, IUserLogic service)
+{
+    if (service.RemoveUser(id, out var errors))
+    {
+        return Results.Ok();
+    }
+    
+    return Results.BadRequest(errors.Select(e => e.Message));
+}
+
 IResult Register(UserLogin user, IUserLogic service)
 {
     if (service.Register(new User(user.Username.ToLower(), GetHashedPassword(user.Password)), out var errors))
@@ -212,6 +232,14 @@ IResult UpdateUser(int id, UserLogin user, IUserLogic service)
     }
     
     return Results.BadRequest(errors.Select(e => e.Message));
+}
+
+IResult GetAllLibrary(IMapper mapper, IAuthorLogic authorLogic, ILibraryLogic libraryLogic)
+{
+    var polygraphies = libraryLogic.GetAllLibrary();
+    var mappedPolygraphies = CommonMethods.MapPolygraphyList(mapper, libraryLogic, authorLogic, polygraphies);
+    
+    return Results.Ok(mappedPolygraphies);
 }
 
 app.Run();
