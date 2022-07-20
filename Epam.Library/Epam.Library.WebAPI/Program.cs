@@ -149,6 +149,25 @@ app.MapGet("/get-all-library",
         GetAllLibrary)
     .Produces<List<Polygraphy>>();
 
+app.MapGet("/get-sorted-library",
+        GetSortedPolygraphies)
+    // .Accepts<bool>("application/json")
+    .Produces<List<Polygraphy>>();
+
+// app.MapGet("get-grouped-by-year",
+//         GroupByYear)
+//     .Produces<Dictionary<int, List<Polygraphy>>>();
+
+app.MapPost("/search-by-name",
+        SearchByName)
+    .Produces<List<Polygraphy>>();
+
+app.MapPost("/search-by-author",
+        SearchByAuthor)
+    .Accepts<SearchByAuthorModel>("application/json")
+    .Produces<List<Polygraphy>>();
+
+
 // methods
 
 IResult GetAllUsers(IUserLogic service)
@@ -164,7 +183,7 @@ IResult Login(UserLogin user, IUserLogic service)
         !string.IsNullOrEmpty(user.Password))
     {
         var loggedInUser = new User(user.Username.ToLower(), 
-            GetHashedPassword(user.Password), 
+            CommonMethods.GetHashedPassword(user.Password), 
             service.GetUserByUsername(user.Username).Role);
         
         if (loggedInUser is null) return Results.NotFound("User not found");
@@ -206,7 +225,8 @@ IResult DeleteUser(int id, IUserLogic service)
 
 IResult Register(UserLogin user, IUserLogic service)
 {
-    if (service.Register(new User(user.Username.ToLower(), GetHashedPassword(user.Password)), out var errors))
+    if (service.Register(new User(
+            user.Username.ToLower(), CommonMethods.GetHashedPassword(user.Password)), out var errors))
     {
         return Results.Ok();
     }
@@ -223,7 +243,7 @@ IResult UpdateUser(int id, UserLogin user, IUserLogic service)
     }
 
     fetchedUser.Username = user.Username.ToLower();
-    fetchedUser.Password = GetHashedPassword(user.Password);
+    fetchedUser.Password = CommonMethods.GetHashedPassword(user.Password);
     fetchedUser.Role = user.Role;
 
     if (service.UpdateUser(fetchedUser, out var errors))
@@ -236,22 +256,33 @@ IResult UpdateUser(int id, UserLogin user, IUserLogic service)
 
 IResult GetAllLibrary(IMapper mapper, IAuthorLogic authorLogic, ILibraryLogic libraryLogic)
 {
-    var polygraphies = libraryLogic.GetAllLibrary();
-    var mappedPolygraphies = CommonMethods.MapPolygraphyList(mapper, libraryLogic, authorLogic, polygraphies);
-    
-    return Results.Ok(mappedPolygraphies);
+    return Results.Ok(CommonMethods
+        .MapPolygraphyList(mapper, libraryLogic, authorLogic, libraryLogic.GetAllLibrary()));
+}
+
+IResult GetSortedPolygraphies(IMapper mapper, IAuthorLogic authorLogic, ILibraryLogic libraryLogic, bool reversed)
+{
+    return Results.Ok(CommonMethods
+        .MapPolygraphyList(mapper, libraryLogic, authorLogic, libraryLogic.GetSortedPolygraphies(reversed)));
+}
+
+// IResult GroupByYear(ILibraryLogic libraryLogic)
+// {
+//     return Results.Ok(libraryLogic.GroupByYear());
+// }
+
+IResult SearchByName(IMapper mapper, IAuthorLogic authorLogic, ILibraryLogic libraryLogic, string name)
+{
+    return Results.Ok(CommonMethods
+        .MapPolygraphyList(mapper, libraryLogic, authorLogic, libraryLogic.SearchByName(name)));
+}
+
+IResult SearchByAuthor(
+    IMapper mapper, IAuthorLogic authorLogic, ILibraryLogic libraryLogic, SearchByAuthorModel model)
+{
+    return Results.Ok(CommonMethods
+        .MapPolygraphyList(mapper, libraryLogic, authorLogic, 
+            libraryLogic.SearchByAuthor(model.Firstname, model.Lastname, model.Type)));
 }
 
 app.Run();
-
-string GetHashedPassword(string password)
-{
-    using var sha = SHA512.Create();
-    var sb = new StringBuilder();
-    foreach (var item in sha.ComputeHash(Encoding.Unicode.GetBytes(password)))
-    {
-        sb.Append(item.ToString("X2"));
-    }
-
-    return sb.ToString();
-}

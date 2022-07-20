@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using AutoMapper;
 using Epam.Library.BLL.Interfaces;
 using Epam.Library.Entities;
@@ -40,5 +42,17 @@ public static class CommonMethods
         }
 
         return mappedPolygraphies;
+    }
+    
+    internal static string GetHashedPassword(string password)
+    {
+        using var sha = SHA512.Create();
+        var sb = new StringBuilder();
+        foreach (var item in sha.ComputeHash(Encoding.Unicode.GetBytes(password)))
+        {
+            sb.Append(item.ToString("X2"));
+        }
+
+        return sb.ToString();
     }
 }
